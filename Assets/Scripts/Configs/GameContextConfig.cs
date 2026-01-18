@@ -22,8 +22,9 @@ namespace TreasureHunt.Configs
         private void OnValidate()
         {
             if (this.rewards != null) {
-                foreach (var reward in rewards) {
-                    reward.OnValidate(); // must hava manual check, since rewards aren't Mono
+                for (int i = 0; i < this.rewards.Length; i++)
+                {
+                    this.rewards[i].OnValidate(); // must hava manual check, since rewards aren't Mono
                 }
             }
         }
