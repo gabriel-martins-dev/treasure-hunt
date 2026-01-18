@@ -6,7 +6,7 @@ namespace TreasureHunt.Services
 
     public interface IWalletService
     {
-        void UpdateResource(string id, int amount);
+        void UpdateResource(string name, int amount);
 
         // TRADEOFF: using IResourceUpdateEvent would cause boxing. Not super relevant here, but still
         event Action<ResourceUpdateEvent> ResourceUpdated; 
@@ -24,20 +24,20 @@ namespace TreasureHunt.Services
         private readonly Dictionary<string, int> resource = new();
         public event Action<ResourceUpdateEvent> ResourceUpdated;
 
-        public void UpdateResource(string id, int amount)
+        public void UpdateResource(string name, int amount)
         {
             if (amount < 0) {
-                Debug.LogError($"Can't update ${id} reward with {amount}");
+                Debug.LogError($"Can't update ${name} reward with {amount}");
                 return;
             }
 
-            if (!resource.ContainsKey(id))
+            if (!resource.ContainsKey(name))
             {
-                this.resource[id] = 0;
+                this.resource[name] = 0;
             }
-            this.resource[id] += amount;
-            this.ResourceUpdated.Invoke(new ResourceUpdateEvent { Name = id, Amount = amount, NewTotal = this.resource[id] });
-            Debug.Log($"[InMemoryWallet] Added {amount} to {id}. New Total: {this.resource[id]}");
+            this.resource[name] += amount;
+            this.ResourceUpdated?.Invoke(new ResourceUpdateEvent { Name = name, Amount = amount, NewTotal = this.resource[name] });
+            Debug.Log($"[InMemoryWallet] Added {amount} to {name}. New Total: {this.resource[name]}");
         }
     }
 }

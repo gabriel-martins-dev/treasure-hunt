@@ -1,5 +1,6 @@
 namespace TreasureHunt.Services
 {
+    using System;
     using TreasureHunt.Configs;
     using UnityEngine;
 
@@ -17,10 +18,12 @@ namespace TreasureHunt.Services
     public class RandomRewardService : IRewardService
     {
         readonly IRewardConfig config;
+        readonly IRandomService randomService;
 
-        public RandomRewardService(IRewardConfig rewardConfig) 
+        public RandomRewardService(IRewardConfig rewardConfig, IRandomService randomService) 
         {
-            this.config = rewardConfig;
+            this.config = rewardConfig ?? throw new ArgumentNullException(nameof(rewardConfig));
+            this.randomService = randomService ?? throw new ArgumentNullException(nameof(randomService));
         }
         public RewardResult? GenerateReward()
         {
@@ -31,8 +34,8 @@ namespace TreasureHunt.Services
                 return null;
             }
 
-            var rewardDef = rewards[Random.Range(0, rewards.Length)];
-            int amount = Random.Range(rewardDef.MinAmount, rewardDef.MaxAmount + 1);
+            var rewardDef = rewards[this.randomService.Range(0, rewards.Length)];
+            int amount = this.randomService.Range(rewardDef.MinAmount, rewardDef.MaxAmount + 1);
             return new RewardResult { Name = rewardDef.Name, Amount = amount };
         }
     }

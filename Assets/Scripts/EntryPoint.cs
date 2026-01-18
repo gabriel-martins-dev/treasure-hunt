@@ -1,6 +1,7 @@
 namespace TreasureHunt.Root
 {
     using TreasureHunt.Configs;
+    using TreasureHunt.GameMode;
     using TreasureHunt.Services;
     using UnityEngine;
 
@@ -15,20 +16,30 @@ namespace TreasureHunt.Root
         private void Awake()
         {
             Debug.Log($"[EntryPoint] context config: {JsonUtility.ToJson(this.gameContextConfig, true)}");
-
+            IRandomService randomService = new RandomService();
             IWalletService walletService = new InMemoryWalletService();
-            IRewardService rewardService = new RandomRewardService(gameContextConfig);
+            IRewardService rewardService = new RandomRewardService(gameContextConfig, randomService);
+            IGameMode gameMode = new TreasureHuntGameMode(gameContextConfig, walletService, rewardService, randomService);
 
             walletService.ResourceUpdated += (evt) =>
             {
                 Debug.Log($"[Event] Currency Update: {evt.Name} changed by {evt.Amount}. Total: {evt.NewTotal}");
             };
 
-            walletService.UpdateResource("Coins", 100);
+            gameMode.AttemptsUpdated += (updatedAttempts) =>
+            {
+                Debug.Log($"[Event] Attempts left: {updatedAttempts}");
+            };
 
-            var rewardResult = rewardService.GenerateReward();
-            walletService.UpdateResource(rewardResult!.Value.Name, rewardResult!.Value.Amount);
+            gameMode.GameCompleted += (victory) =>
+            {
+                var msg = victory ? "Victory!" : "Defeat!";
+                Debug.Log($"[Event] Game finished. {msg}");
+            };
 
+            gameMode.StartGame();
+            Debug.Log($"[EntryPoint] Open 0");
+            gameMode.OpenAction(0);
         }
     }
 
