@@ -2,7 +2,9 @@ namespace TreasureHunt.Root
 {
     using TreasureHunt.Configs;
     using TreasureHunt.GameMode;
+    using TreasureHunt.Presentation;
     using TreasureHunt.Services;
+    using TreasureHunt.View;
     using UnityEngine;
 
     /// <summary>
@@ -12,23 +14,20 @@ namespace TreasureHunt.Root
     public class EntryPoint : MonoBehaviour
     {
         [SerializeField] private GameContextConfig gameContextConfig;
+        [SerializeField] private GameScreenView gameScreenView;
 
-        private void Awake()
+        async void Awake()
         {
             Debug.Log($"[EntryPoint] context config: {JsonUtility.ToJson(this.gameContextConfig, true)}");
             IRandomService randomService = new RandomService();
             IWalletService walletService = new InMemoryWalletService();
             IRewardService rewardService = new RandomRewardService(gameContextConfig, randomService);
             IGameMode gameMode = new TreasureHuntGameMode(gameContextConfig, walletService, rewardService, randomService);
+            GameViewModel gameViewModel = new (gameMode, gameContextConfig);
 
             walletService.ResourceUpdated += (evt) =>
             {
                 Debug.Log($"[Event] Currency Update: {evt.Name} changed by {evt.Amount}. Total: {evt.NewTotal}");
-            };
-
-            gameMode.AttemptsUpdated += (updatedAttempts) =>
-            {
-                Debug.Log($"[Event] Attempts left: {updatedAttempts}");
             };
 
             gameMode.GameCompleted += (victory) =>
@@ -37,10 +36,8 @@ namespace TreasureHunt.Root
                 Debug.Log($"[Event] Game finished. {msg}");
             };
 
-            gameMode.StartGame();
-            Debug.Log($"[EntryPoint] Open 0");
-            gameMode.OpenAction(0);
+            gameScreenView.Bind(gameViewModel);
+            await gameScreenView.InitializeAsync();
         }
     }
-
 }
