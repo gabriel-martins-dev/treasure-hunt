@@ -11,6 +11,7 @@ namespace TreasureHunt.Presentation
     public class GameViewModel : IDisposable
     {
         public event Action<int> AttemptsChanged;
+        public event Action GameStarted;
         public event Action<bool> GameFinished;
         public event Action<ResourceUpdateEvent> ResourceUpdate;
         public IReadOnlyCollection<ChestViewModel> TargetsViewModels => this.targetViewModels;
@@ -52,6 +53,7 @@ namespace TreasureHunt.Presentation
                 this.targetViewModels[i].SetState(ChestState.Idle);
             }
             this.gameMode.StartGame();
+            this.GameStarted?.Invoke();
         }
 
         public async UniTaskVoid OnOpenClicked(int index)

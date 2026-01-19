@@ -561,6 +561,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba46d86fc6760d64ba05ffae3d0787e6, type: 3}
+--- !u!114 &4238233280154652343 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6124038708119240195, guid: ba46d86fc6760d64ba05ffae3d0787e6, type: 3}
+  m_PrefabInstance: {fileID: 4238233280154652342}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4528996c3129e2541bf3bc80a5beb3b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8119646368286303241
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -609,6 +620,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2949186548532724694, guid: fe674d079b9d56e489983db44492e847, type: 3}
+      propertyPath: resultHUDView
+      value: 
+      objectReference: {fileID: 4238233280154652343}
     - target: {fileID: 2949186548532724694, guid: fe674d079b9d56e489983db44492e847, type: 3}
       propertyPath: gameScreenView
       value: 

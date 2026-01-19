@@ -13,28 +13,24 @@ namespace TreasureHunt.Root
     /// </summary>
     public class EntryPoint : MonoBehaviour
     {
-        [SerializeField] private GameContextConfig gameContextConfig;
-        [SerializeField] private GameScreenView gameScreenView;
-        [SerializeField] private ResourcesHUDView resourcesHUDView;
+        [SerializeField] GameContextConfig gameContextConfig;
+        [SerializeField] GameScreenView gameScreenView;
+        [SerializeField] ResourcesHUDView resourcesHUDView;
+        [SerializeField] ResultHUDView resultHUDView;
 
         async void Awake()
         {
-            Debug.Log($"[EntryPoint] context config: {JsonUtility.ToJson(this.gameContextConfig, true)}");
             IRandomService randomService = new RandomService();
             IWalletService walletService = new InMemoryWalletService();
-            IRewardService rewardService = new RandomRewardService(gameContextConfig, randomService);
-            IGameMode gameMode = new TreasureHuntGameMode(gameContextConfig, walletService, rewardService, randomService);
-            GameViewModel gameViewModel = new (gameContextConfig, gameMode, walletService);
+            IRewardService rewardService = new RandomRewardService(this.gameContextConfig, randomService);
+            IGameMode gameMode = new TreasureHuntGameMode(this.gameContextConfig, walletService, rewardService, randomService);
+            GameViewModel gameViewModel = new (this.gameContextConfig, gameMode, walletService);
 
-            gameMode.GameCompleted += (victory) =>
-            {
-                var msg = victory ? "Victory!" : "Defeat!";
-                Debug.Log($"[Event] Game finished. {msg}");
-            };
+            this.gameScreenView.Bind(gameViewModel);
+            this.resourcesHUDView.Bind(gameViewModel);
+            this.resultHUDView.Bind(gameViewModel);
 
-            gameScreenView.Bind(gameViewModel);
-            resourcesHUDView.Bind(gameViewModel);
-            await gameScreenView.InitializeAsync();
+            await this.gameScreenView.InitializeAsync();
         }
     }
 }
