@@ -55,6 +55,7 @@ MonoBehaviour:
   targetPrefab: {fileID: 9026118107620749185, guid: fefe442efdfffa943b3c67b642c43cd9, type: 3}
   attemptsText: {fileID: 7516405186458804492}
   startGameFooter: {fileID: 1570830071594245642}
+  resultText: {fileID: 8575252249229883858}
   startGameButton: {fileID: 6003500680977379449}
 --- !u!1001 &2163989692943003712
 PrefabInstance:
@@ -180,6 +181,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8575252249229883858 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7568689868714150290, guid: 19bb691538bd43f4481f34572401165e, type: 3}
+  m_PrefabInstance: {fileID: 2163989692943003712}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &5040438708409432467

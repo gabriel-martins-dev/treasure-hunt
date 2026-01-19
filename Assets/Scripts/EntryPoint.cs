@@ -16,7 +16,6 @@ namespace TreasureHunt.Root
         [SerializeField] GameContextConfig gameContextConfig;
         [SerializeField] GameScreenView gameScreenView;
         [SerializeField] ResourcesHUDView resourcesHUDView;
-        [SerializeField] ResultHUDView resultHUDView;
 
         async void Awake()
         {
@@ -28,7 +27,6 @@ namespace TreasureHunt.Root
 
             this.gameScreenView.Bind(gameViewModel);
             this.resourcesHUDView.Bind(gameViewModel);
-            this.resultHUDView.Bind(gameViewModel);
 
             await this.gameScreenView.InitializeAsync();
         }

@@ -8,9 +8,12 @@ namespace TreasureHunt.View
     public class ChestView : MonoBehaviour
     {
         [Header("Visuals")]
-        [SerializeField] private Image background;
-        [SerializeField] private TextMeshProUGUI stateText;
         [SerializeField] private Button actionButton;
+        [SerializeField] private Image background;
+        [SerializeField] private Image chest;
+        [SerializeField] private Sprite idleSprite;
+        [SerializeField] private Sprite emptySprite;
+        [SerializeField] private Sprite treasureSprite;
 
         private ChestViewModel viewModel;
 
@@ -33,21 +36,23 @@ namespace TreasureHunt.View
 
         private void OnStateChanged(ChestState state)
         {
-            this.stateText.text = state.ToString();
-
             switch (state)
             {
                 case ChestState.Idle:
-                    this.background.color = Color.gray;
+                    this.background.enabled = false;
                     this.actionButton.interactable = true;
+                    this.chest.sprite = this.idleSprite;
                     break;
                 case ChestState.Opening:
+                    this.background.enabled = true;
                     this.background.color = Color.yellow;
                     this.actionButton.interactable = true; // Still interactable to allow interruption
                     break;
                 case ChestState.Opened:
-                    this.background.color = Color.white;
+                    this.background.enabled = false;
                     this.actionButton.interactable = false;
+                    this.chest.sprite = this.viewModel.IsWinner ? this.treasureSprite : this.emptySprite;
+
                     break;
             }
         }

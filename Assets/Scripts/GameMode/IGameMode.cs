@@ -6,6 +6,9 @@ namespace TreasureHunt.GameMode
     {
         event Action<int> AttemptsUpdated;
         event Action<bool> GameCompleted;
+
+        int VictoryTargetIndex { get; }
+
         void StartGame();
         void OpenAction(int openIndex);
     }

@@ -16,7 +16,11 @@ namespace TreasureHunt.View
         [Header("HUD")]
         [SerializeField] TextMeshProUGUI attemptsText;
         [SerializeField] GameObject startGameFooter;
+        [SerializeField] TextMeshProUGUI resultText;
         [SerializeField] Button startGameButton;
+
+        const string WinMessage = "You Found the Treasure! You Win!";
+        const string LossMessage = "Game Over! Out of Attempts!";
 
         GameViewModel viewModel;
 
@@ -50,8 +54,9 @@ namespace TreasureHunt.View
             await UniTask.WhenAll(spawnTasks);
 
             // bind HUD
-            this.viewModel.AttemptsChanged += UpdateAttempts;
-            this.viewModel.GameFinished += OnGameFinish;
+            this.viewModel.AttemptsUpdated += HandleAttemptsUpdate;
+            this.viewModel.GameStarted += HandleGameStarted;
+            this.viewModel.GameFinished += HandleGameFinished;
             this.startGameButton.onClick.AddListener(this.StartRound);
             this.startGameFooter.SetActive(true);
         }
@@ -64,12 +69,29 @@ namespace TreasureHunt.View
             this.viewModel.Start();
         }
 
-        void UpdateAttempts(int count) => this.attemptsText.text = $"Remaining Attempts: {count} / {this.viewModel.MaxAttemptsPerRound}";
+        void HandleAttemptsUpdate(int count) => this.attemptsText.text = $"Remaining Attempts: {count} / {this.viewModel.MaxAttemptsPerRound}";
 
-        void OnGameFinish(bool won)
+        void HandleGameStarted()
         {
-            Debug.Log("Won: " + won);
+            this.resultText.gameObject.SetActive(false);
+        }
+
+        void HandleGameFinished(bool victory)
+        {
+            Debug.Log("Victory: " + victory);
             this.startGameFooter.SetActive(true);
+            this.resultText.gameObject.SetActive(true);
+            this.resultText.text = victory ? WinMessage : LossMessage;
+        }
+
+        void OnDestroy()
+        {
+            if (this.viewModel != null)
+            {
+                this.viewModel.AttemptsUpdated -= HandleAttemptsUpdate;
+                this.viewModel.GameStarted -= HandleGameStarted;
+                this.viewModel.GameFinished -= HandleGameFinished;
+            }
         }
     }
 }

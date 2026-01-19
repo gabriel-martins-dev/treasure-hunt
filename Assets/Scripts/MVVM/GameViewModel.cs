@@ -10,7 +10,7 @@ namespace TreasureHunt.Presentation
 
     public class GameViewModel : IDisposable
     {
-        public event Action<int> AttemptsChanged;
+        public event Action<int> AttemptsUpdated;
         public event Action GameStarted;
         public event Action<bool> GameFinished;
         public event Action<ResourceUpdateEvent> ResourceUpdate;
@@ -38,8 +38,8 @@ namespace TreasureHunt.Presentation
                 this.targetViewModels[i] = chestViewModel;
             }
 
-            this.gameMode.AttemptsUpdated += (val) => this.AttemptsChanged?.Invoke(val);
-            this.gameMode.GameCompleted += (win) => this.OnGameFinished(win);
+            this.gameMode.AttemptsUpdated += (val) => this.AttemptsUpdated?.Invoke(val);
+            this.gameMode.GameCompleted += this.HandleGameFinished;
             this.walletService.ResourceUpdated += (resourceUptEvent) =>
             {
                 this.ResourceUpdate.Invoke(resourceUptEvent);
@@ -48,11 +48,12 @@ namespace TreasureHunt.Presentation
 
         public void Start()
         {
+            this.gameMode.StartGame();
             for (int i = 0; i < this.targetViewModels.Length; i++)
             {
                 this.targetViewModels[i].SetState(ChestState.Idle);
+                this.targetViewModels[i].SetResult(this.gameMode.VictoryTargetIndex == this.targetViewModels[i].Index);
             }
-            this.gameMode.StartGame();
             this.GameStarted?.Invoke();
         }
 
@@ -82,7 +83,6 @@ namespace TreasureHunt.Presentation
 
             if (canceled)
             {
-                UnityEngine.Debug.Log("CANCELED!");
                 if (target.State == ChestState.Opening)
                 {
                     target.SetState(ChestState.Idle);
@@ -100,7 +100,7 @@ namespace TreasureHunt.Presentation
             this.cancellationTokenSource = null;
         }
 
-        void OnGameFinished(bool win)
+        void HandleGameFinished(bool win)
         {
             for (int i = 0; i < this.targetViewModels.Length; i++)
             {

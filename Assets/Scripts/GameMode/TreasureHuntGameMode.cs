@@ -9,6 +9,7 @@ namespace TreasureHunt.GameMode
     {
         public event Action<int> AttemptsUpdated;
         public event Action<bool> GameCompleted;
+        public int VictoryTargetIndex => this.victoryChestIndex;
 
         readonly IRoundConfig roundConfig;
         readonly IWalletService walletService;
