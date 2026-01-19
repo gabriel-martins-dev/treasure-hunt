@@ -25,5 +25,9 @@ For simplicity within the current scope, I utilized **Direct Prefab Instantiatio
 - **Setup**: Open the `Game` scene, the `EntryPoint` serves as the composition root.
 - **Play**: Press the Play button to initialize and start the game.
 
+## Testing
+The project includes Unit Tests from Test Runner to validate core business logic
+- **Validation**: The tests utilize a Mock version of certain services to ensure game rules are evaluated predictably.
+
 ## Basic initial diagram to build project
 ![Treasure Hunt High-level Layer Separation](Documentaiton/TreasureHuntHighlevelLayerSeparation.png)
