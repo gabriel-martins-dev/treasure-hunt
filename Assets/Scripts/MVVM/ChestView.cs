@@ -1,9 +1,10 @@
 namespace TreasureHunt.View
 {
+    using System;
+    using System.Collections.Generic;
+    using TreasureHunt.Presentation;
     using UnityEngine;
     using UnityEngine.UI;
-    using TreasureHunt.Presentation;
-    using TMPro;
 
     public class ChestView : MonoBehaviour
     {
@@ -15,11 +16,19 @@ namespace TreasureHunt.View
         [SerializeField] private Sprite emptySprite;
         [SerializeField] private Sprite treasureSprite;
 
-        private ChestViewModel viewModel;
+        ChestViewModel viewModel;
+        Dictionary<ChestState, Action> stateHandlers;
 
         public void Bind(ChestViewModel viewModel)
         {
             this.viewModel = viewModel;
+
+            this.stateHandlers = new Dictionary<ChestState, Action>
+            {
+                { ChestState.Idle, this.HandleIdleState },
+                { ChestState.Opening, this.HandleOpeningState },
+                { ChestState.Opened, this.HandleOpenedState },
+            };
 
             this.viewModel.StateChanged += OnStateChanged;
             this.actionButton.onClick.AddListener(HandleClick);
@@ -29,35 +38,41 @@ namespace TreasureHunt.View
             this.transform.SetSiblingIndex(this.viewModel.Index);
         }
 
-        private void HandleClick()
+        void HandleClick()
         {
             this.viewModel.OnClicked();
         }
 
-        private void OnStateChanged(ChestState state)
+        void OnStateChanged(ChestState state)
         {
-            switch (state)
+            if (this.stateHandlers.TryGetValue(state, out var handler))
             {
-                case ChestState.Idle:
-                    this.background.enabled = false;
-                    this.actionButton.interactable = true;
-                    this.chest.sprite = this.idleSprite;
-                    break;
-                case ChestState.Opening:
-                    this.background.enabled = true;
-                    this.background.color = Color.yellow;
-                    this.actionButton.interactable = true; // Still interactable to allow interruption
-                    break;
-                case ChestState.Opened:
-                    this.background.enabled = false;
-                    this.actionButton.interactable = false;
-                    this.chest.sprite = this.viewModel.IsWinner ? this.treasureSprite : this.emptySprite;
-
-                    break;
+                handler.Invoke();
             }
         }
 
-        private void OnDestroy()
+        void HandleIdleState()
+        {
+            this.background.enabled = false;
+            this.actionButton.interactable = true;
+            this.chest.sprite = this.idleSprite;
+        }
+
+        void HandleOpeningState()
+        {
+            this.background.enabled = true;
+            this.background.color = Color.yellow;
+            this.actionButton.interactable = false;
+        }
+
+        void HandleOpenedState()
+        {
+            this.background.enabled = false;
+            this.actionButton.interactable = false;
+            this.chest.sprite = this.viewModel.IsWinner ? this.treasureSprite : this.emptySprite;
+        }
+
+        void OnDestroy()
         {
             if (this.viewModel != null)
             {
