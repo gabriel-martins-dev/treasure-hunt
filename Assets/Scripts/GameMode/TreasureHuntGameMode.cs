@@ -5,6 +5,10 @@ namespace TreasureHunt.GameMode
     using TreasureHunt.Services;
     using UnityEngine;
 
+    /// <summary>
+    /// Treasure hunt game rules
+    /// the winning index, attempts and if a round is won or lost
+    /// </summary>
     public class TreasureHuntGameMode : IGameMode
     {
         public event Action<int> AttemptsUpdated;
@@ -49,7 +53,6 @@ namespace TreasureHunt.GameMode
                 return;
             }
 
-            // update attempts
             this.currentAttempts--;
             this.AttemptsUpdated?.Invoke(this.currentAttempts);
 

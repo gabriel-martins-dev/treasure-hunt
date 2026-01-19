@@ -8,6 +8,10 @@ namespace TreasureHunt.Presentation
     using TreasureHunt.GameMode;
     using TreasureHunt.Services;
 
+    /// <summary>
+    /// Connects GameMode and UI
+    /// Manages asynchronous chest sequences (opening, cancellation) so UI state remains consistent
+    /// </summary>
     public class GameViewModel : IDisposable
     {
         public event Action GameStarted;
@@ -39,7 +43,7 @@ namespace TreasureHunt.Presentation
             }
 
             this.gameMode.AttemptsUpdated += this.HandleAttemptsUpdated;
-            this.gameMode.GameCompleted += this.HandleGameFinished;
+            this.gameMode.GameCompleted += this.HandleGameCompleted;
             this.walletService.ResourceUpdated += this.HandleResourcesUpdated;
         }
 
@@ -98,6 +102,7 @@ namespace TreasureHunt.Presentation
         {
             target.SetState(ChestState.Opening);
 
+            // using SuppressCancellationThrow to handle task interruption without the overhead from exception.
             var canceled = await UniTask.Delay(
                 TimeSpan.FromSeconds(this.roundConfig.ChestOpenDuration),
                 cancellationToken: token
@@ -127,7 +132,7 @@ namespace TreasureHunt.Presentation
             this.AttemptsUpdated?.Invoke(val);
         }
 
-        void HandleGameFinished(bool win)
+        void HandleGameCompleted(bool win)
         {
             for (int i = 0; i < this.targetViewModels.Length; i++)
             {
@@ -147,7 +152,7 @@ namespace TreasureHunt.Presentation
             this.cancellationTokenSource?.Cancel();
             this.cancellationTokenSource?.Dispose();
             this.gameMode.AttemptsUpdated -= this.HandleAttemptsUpdated;
-            this.gameMode.GameCompleted -= this.HandleGameFinished;
+            this.gameMode.GameCompleted -= this.HandleGameCompleted;
             this.walletService.ResourceUpdated -= this.HandleResourcesUpdated;
         }
     }

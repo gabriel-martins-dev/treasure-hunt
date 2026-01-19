@@ -7,6 +7,9 @@ namespace TreasureHunt.View
     using UnityEngine;
     using UnityEngine.UI;
 
+    /// <summary>
+    /// Manages the chests and the global HUD (attempts and win/loss messages), reacting to events from view model
+    /// </summary>
     public class GameScreenView : MonoBehaviour
     {
         [Header("Grid Setup")]
@@ -42,7 +45,7 @@ namespace TreasureHunt.View
             this.viewModel.GameStarted += HandleGameStarted;
             this.viewModel.GameFinished += HandleGameFinished;
             this.viewModel.TargetsUpdated += HandleTargetsUpdated;
-            this.startGameButton.onClick.AddListener(this.StartRound);
+            this.startGameButton.onClick.AddListener(this.HandleStartRound);
             this.startGameFooter.SetActive(true);
 
             this.HandleTargetsUpdated();
@@ -84,7 +87,7 @@ namespace TreasureHunt.View
             }
         }
 
-        void StartRound()
+        void HandleStartRound()
         {
             this.startGameFooter.SetActive(false);
             this.attemptsText.gameObject.SetActive(true);
@@ -116,6 +119,7 @@ namespace TreasureHunt.View
                 this.viewModel.TargetsUpdated -= HandleTargetsUpdated;
             }
 
+            this.chestPool?.Dispose();
             this.startGameButton.onClick.RemoveAllListeners();
         }
     }

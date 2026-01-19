@@ -10,11 +10,17 @@ namespace TreasureHunt.Services
         public int Amount;
     }
 
+    /// <summary>
+    /// Structure for calculating rewards
+    /// </summary>
     public interface IRewardService
     {
         RewardResult? GenerateReward();
     }
 
+    /// <summary>
+    /// Randomly selects and calculating rewards
+    /// </summary>
     public class RandomRewardService : IRewardService
     {
         readonly IRewardConfig config;

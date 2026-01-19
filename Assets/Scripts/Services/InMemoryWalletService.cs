@@ -4,11 +4,14 @@ namespace TreasureHunt.Services
     using System.Collections.Generic;
     using UnityEngine;
 
+    /// <summary>
+    /// Structure for player's resource balances
+    /// </summary>
     public interface IWalletService
     {
         void UpdateResource(string name, int amount);
 
-        // TRADEOFF: using IResourceUpdateEvent would cause boxing. Not super relevant here, but still
+        // TRADEOFF: not using IResourceUpdateEvent, would cause boxing. Not super relevant here, but still
         event Action<ResourceUpdateEvent> ResourceUpdated; 
     }
 
@@ -19,9 +22,12 @@ namespace TreasureHunt.Services
         public int Amount;
     }
 
+    /// <summary>
+    /// Manages the player's persistent resource balances during a session
+    /// </summary>
     public class InMemoryWalletService : IWalletService
     {
-        private readonly Dictionary<string, int> resource = new();
+        readonly Dictionary<string, int> resource = new();
         public event Action<ResourceUpdateEvent> ResourceUpdated;
 
         public void UpdateResource(string name, int amount)

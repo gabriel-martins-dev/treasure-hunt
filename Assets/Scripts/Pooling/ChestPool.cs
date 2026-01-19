@@ -5,6 +5,10 @@ namespace TreasureHunt.View
     using UnityEngine;
     using UnityEngine.Pool;
 
+    /// <summary>
+    /// wrapper for Unity’s ObjectPool<T> 
+    /// Uses InstantiateAsync to prevent frame-rate drops.
+    /// </summary>
     public class ChestPool
     {
         readonly ChestView prefab;
@@ -62,5 +66,7 @@ namespace TreasureHunt.View
         }
 
         public void Return(ChestView chest) => this.pool.Release(chest);
+
+        public void Dispose() => this.pool.Dispose();
     }
 }

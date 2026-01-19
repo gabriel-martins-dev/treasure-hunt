@@ -6,6 +6,9 @@ namespace TreasureHunt.View
     using UnityEngine;
     using UnityEngine.UI;
 
+    /// <summary>
+    /// Handles the sprites and UI states of single chest
+    /// </summary>
     public class ChestView : MonoBehaviour
     {
         [Header("Visuals")]
@@ -27,9 +30,9 @@ namespace TreasureHunt.View
         public void Bind(ChestViewModel viewModel)
         {
             this.viewModel = viewModel;
-            this.viewModel.StateChanged += this.HandleStateChanged;
+            this.viewModel.StateUpdated += this.HandleStateUpdated;
 
-            this.stateHandlers = new Dictionary<ChestState, Action>
+            this.stateHandlers ??= new Dictionary<ChestState, Action>
             {
                 { ChestState.Idle, this.HandleIdleState },
                 { ChestState.Opening, this.HandleOpeningState },
@@ -38,7 +41,7 @@ namespace TreasureHunt.View
             };
 
             // starting visual state
-            this.HandleStateChanged(this.viewModel.State);
+            this.HandleStateUpdated(this.viewModel.State);
             this.transform.SetSiblingIndex(this.viewModel.Index);
         }
 
@@ -47,7 +50,7 @@ namespace TreasureHunt.View
             this.viewModel.OnClicked();
         }
 
-        void HandleStateChanged(ChestState state)
+        void HandleStateUpdated(ChestState state)
         {
             if (this.stateHandlers.TryGetValue(state, out var handler))
             {
@@ -85,7 +88,7 @@ namespace TreasureHunt.View
         {
             if (this.viewModel != null)
             {
-                this.viewModel.StateChanged -= HandleStateChanged;
+                this.viewModel.StateUpdated -= HandleStateUpdated;
             } 
             this.actionButton.onClick.RemoveAllListeners();
         }

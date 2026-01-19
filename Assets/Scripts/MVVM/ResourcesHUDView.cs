@@ -20,6 +20,9 @@ namespace TreasureHunt.View
         }
     }
 
+    /// <summary>
+    /// Maps resource names to UI items and updates the player's currency.
+    /// </summary>
     public class ResourcesHUDView : MonoBehaviour
     {
         [SerializeField] private ResourceHUDItem[] resourceCounter;
