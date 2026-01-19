@@ -33,7 +33,8 @@ namespace TreasureHunt.View
             {
                 { ChestState.Idle, this.HandleIdleState },
                 { ChestState.Opening, this.HandleOpeningState },
-                { ChestState.Opened, this.HandleOpenedState }
+                { ChestState.Opened, this.HandleOpenedState },
+                { ChestState.Locked, this.HandleLockedState }
             };
 
             // starting visual state
@@ -73,6 +74,11 @@ namespace TreasureHunt.View
             this.background.enabled = false;
             this.actionButton.interactable = false;
             this.chest.sprite = this.viewModel.IsWinner ? this.treasureSprite : this.emptySprite;
+        }
+
+        void HandleLockedState()
+        {
+            this.actionButton.interactable = false;
         }
 
         void OnDestroy()

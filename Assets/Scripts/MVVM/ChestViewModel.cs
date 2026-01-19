@@ -25,10 +25,7 @@ namespace TreasureHunt.Presentation
 
         public void OnClicked()
         {
-            if (State != ChestState.Locked)
-            {
-                this.Clicked?.Invoke();
-            }
+            this.Clicked?.Invoke();
         }
     }
 }

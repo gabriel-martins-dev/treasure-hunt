@@ -50,7 +50,7 @@ namespace TreasureHunt.View
 
         void HandleTargetsUpdated()
         {
-            _ = this.BuildChests(); // dynamically updates chests in case of config change
+            this.BuildChests().Forget(); // dynamically updates chests in case of config change
         }
 
         async UniTask BuildChests()

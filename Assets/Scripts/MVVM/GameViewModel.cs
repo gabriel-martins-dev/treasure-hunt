@@ -46,6 +46,8 @@ namespace TreasureHunt.Presentation
         public void Start()
         {
             this.gameMode.StartGame();
+
+            //TRADEOFF: for simplicity only "reacting" to number of chests change when starting round
             // recreate view models if config is changed
             if (this.targetViewModels.Length != this.roundConfig.NumberOfChestsPerRound)
             {
