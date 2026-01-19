@@ -37,7 +37,6 @@ namespace TreasureHunt.Services
             }
             this.resource[name] += amount;
             this.ResourceUpdated?.Invoke(new ResourceUpdateEvent { Name = name, Amount = amount, NewTotal = this.resource[name] });
-            Debug.Log($"[InMemoryWallet] Added {amount} to {name}. New Total: {this.resource[name]}");
         }
     }
 }
