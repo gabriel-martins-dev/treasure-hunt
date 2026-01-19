@@ -22,8 +22,8 @@ For simplicity within the current scope, I utilized **Direct Prefab Instantiatio
 - **Version**: Unity 6 LTS.
 - **Dependencies**: UniTask and TextMeshPro packages are required.
 - **Configuration**: The balance settings can be found in `Assets/Configs/GameContext.asset`.
-- **Setup**: Open the `Game` scene; the `EntryPoint` serves as the composition root.
-- **Play**: Press the Play button to initialize the services and start the game.
+- **Setup**: Open the `Game` scene, the `EntryPoint` serves as the composition root.
+- **Play**: Press the Play button to initialize and start the game.
 
 ## Basic initial diagram to build project
 ![Treasure Hunt High-level Layer Separation](Documentaiton/TreasureHuntHighlevelLayerSeparation.png)
