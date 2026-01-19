@@ -41,7 +41,7 @@ namespace TreasureHunt.GameMode
             this.gameFinished = false;
             this.currentAttempts = this.roundConfig.MaxAttemptsPerRound;
             this.victoryChestIndex = this.randomService.Range(0, this.roundConfig.NumberOfChestsPerRound);
-            Debug.Log($"[GameMode] Round Started. Attempts: {this.currentAttempts}. Treasure is in {this.victoryChestIndex}");
+            Debug.Log($"[GameMode] Round Started. Attempts: {this.currentAttempts}. Treasure is at index {this.victoryChestIndex}");
             this.AttemptsUpdated?.Invoke(currentAttempts);
         }
 
