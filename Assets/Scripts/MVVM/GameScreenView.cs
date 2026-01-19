@@ -41,8 +41,16 @@ namespace TreasureHunt.View
             this.viewModel.AttemptsUpdated += HandleAttemptsUpdate;
             this.viewModel.GameStarted += HandleGameStarted;
             this.viewModel.GameFinished += HandleGameFinished;
+            this.viewModel.TargetsUpdated += HandleTargetsUpdated;
             this.startGameButton.onClick.AddListener(this.StartRound);
             this.startGameFooter.SetActive(true);
+
+            this.HandleTargetsUpdated();
+        }
+
+        void HandleTargetsUpdated()
+        {
+            _ = this.BuildChests(); // dynamically updates chests in case of config change
         }
 
         async UniTask BuildChests()
@@ -82,7 +90,6 @@ namespace TreasureHunt.View
             this.attemptsText.gameObject.SetActive(true);
             this.targetContainer.gameObject.SetActive(true);
             this.viewModel.Start();
-            _ = this.BuildChests(); // dynamically updates chests in case of config change
         }
 
         void HandleAttemptsUpdate(int count) => this.attemptsText.text = $"Remaining Attempts: {count} / {this.viewModel.MaxAttemptsPerRound}";
@@ -106,7 +113,10 @@ namespace TreasureHunt.View
                 this.viewModel.AttemptsUpdated -= HandleAttemptsUpdate;
                 this.viewModel.GameStarted -= HandleGameStarted;
                 this.viewModel.GameFinished -= HandleGameFinished;
+                this.viewModel.TargetsUpdated -= HandleTargetsUpdated;
             }
+
+            this.startGameButton.onClick.RemoveAllListeners();
         }
     }
 }

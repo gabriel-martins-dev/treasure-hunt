@@ -10,8 +10,9 @@ namespace TreasureHunt.Presentation
 
     public class GameViewModel : IDisposable
     {
-        public event Action<int> AttemptsUpdated;
         public event Action GameStarted;
+        public event Action TargetsUpdated;
+        public event Action<int> AttemptsUpdated;
         public event Action<bool> GameFinished;
         public event Action<ResourceUpdateEvent> ResourceUpdate;
         public IReadOnlyCollection<ChestViewModel> TargetsViewModels => this.targetViewModels;
@@ -59,6 +60,8 @@ namespace TreasureHunt.Presentation
                     this.targetViewModels[i] = chestViewModel;
                     this.targetViewModels[i].SetResult(this.gameMode.VictoryTargetIndex == this.targetViewModels[i].Index);
                 }
+
+                this.TargetsUpdated?.Invoke();
             }
             else // if config didn't change, just reset
             {
@@ -77,14 +80,19 @@ namespace TreasureHunt.Presentation
             var target = this.targetViewModels[index];
 
             // ignore if already opened or opening
-            if (target.State == ChestState.Opened || target.State == ChestState.Opening) return;
+            if (target.State == ChestState.Opened) return;
 
+            // should cancel already opening process
+            var cancelOpening = target.State == ChestState.Opening;
             // cancel existing opening process
             this.CancelCurrentOpening();
 
-            // start the new opening process
-            this.cancellationTokenSource = new CancellationTokenSource();
-            await DoOpenSequence(target, this.cancellationTokenSource.Token);
+            if(!cancelOpening)
+            {
+                // start the new opening process
+                this.cancellationTokenSource = new CancellationTokenSource();
+                await DoOpenSequence(target, this.cancellationTokenSource.Token);
+            }
         }
 
         async UniTask DoOpenSequence(ChestViewModel target, CancellationToken token)

@@ -19,22 +19,25 @@ namespace TreasureHunt.View
         ChestViewModel viewModel;
         Dictionary<ChestState, Action> stateHandlers;
 
+        void Start()
+        {
+            this.actionButton.onClick.AddListener(HandleClick);
+        }
+
         public void Bind(ChestViewModel viewModel)
         {
             this.viewModel = viewModel;
+            this.viewModel.StateChanged += this.HandleStateChanged;
 
             this.stateHandlers = new Dictionary<ChestState, Action>
             {
                 { ChestState.Idle, this.HandleIdleState },
                 { ChestState.Opening, this.HandleOpeningState },
-                { ChestState.Opened, this.HandleOpenedState },
+                { ChestState.Opened, this.HandleOpenedState }
             };
 
-            this.viewModel.StateChanged += OnStateChanged;
-            this.actionButton.onClick.AddListener(HandleClick);
-
             // starting visual state
-            this.OnStateChanged(this.viewModel.State);
+            this.HandleStateChanged(this.viewModel.State);
             this.transform.SetSiblingIndex(this.viewModel.Index);
         }
 
@@ -43,7 +46,7 @@ namespace TreasureHunt.View
             this.viewModel.OnClicked();
         }
 
-        void OnStateChanged(ChestState state)
+        void HandleStateChanged(ChestState state)
         {
             if (this.stateHandlers.TryGetValue(state, out var handler))
             {
@@ -62,7 +65,7 @@ namespace TreasureHunt.View
         {
             this.background.enabled = true;
             this.background.color = Color.yellow;
-            this.actionButton.interactable = false;
+            this.actionButton.interactable = true;
         }
 
         void HandleOpenedState()
@@ -76,7 +79,7 @@ namespace TreasureHunt.View
         {
             if (this.viewModel != null)
             {
-                this.viewModel.StateChanged -= OnStateChanged;
+                this.viewModel.StateChanged -= HandleStateChanged;
             } 
             this.actionButton.onClick.RemoveAllListeners();
         }
