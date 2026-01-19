@@ -38,12 +38,9 @@ namespace TreasureHunt.Presentation
                 this.targetViewModels[i] = chestViewModel;
             }
 
-            this.gameMode.AttemptsUpdated += (val) => this.AttemptsUpdated?.Invoke(val);
+            this.gameMode.AttemptsUpdated += this.HandleAttemptsUpdated;
             this.gameMode.GameCompleted += this.HandleGameFinished;
-            this.walletService.ResourceUpdated += (resourceUptEvent) =>
-            {
-                this.ResourceUpdate.Invoke(resourceUptEvent);
-            };
+            this.walletService.ResourceUpdated += this.HandleResourcesUpdated;
         }
 
         public void Start()
@@ -123,6 +120,11 @@ namespace TreasureHunt.Presentation
             this.cancellationTokenSource = null;
         }
 
+        void HandleAttemptsUpdated(int val)
+        {
+            this.AttemptsUpdated?.Invoke(val);
+        }
+
         void HandleGameFinished(bool win)
         {
             for (int i = 0; i < this.targetViewModels.Length; i++)
@@ -133,10 +135,18 @@ namespace TreasureHunt.Presentation
             this.GameFinished?.Invoke(win);
         }
 
+        void HandleResourcesUpdated(ResourceUpdateEvent resourceUptEvent)
+        {
+            this.ResourceUpdate?.Invoke(resourceUptEvent);
+        }
+
         public void Dispose()
         {
             this.cancellationTokenSource?.Cancel();
             this.cancellationTokenSource?.Dispose();
+            this.gameMode.AttemptsUpdated -= this.HandleAttemptsUpdated;
+            this.gameMode.GameCompleted -= this.HandleGameFinished;
+            this.walletService.ResourceUpdated -= this.HandleResourcesUpdated;
         }
     }
 }
