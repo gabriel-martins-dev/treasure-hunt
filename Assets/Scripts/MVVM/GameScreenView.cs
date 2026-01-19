@@ -22,7 +22,9 @@ namespace TreasureHunt.View
         const string WinMessage = "You Found the Treasure! You Win!";
         const string LossMessage = "Game Over! Out of Attempts!";
 
+        ChestPool chestPool;
         GameViewModel viewModel;
+        readonly List<ChestView> activeChests = new();
 
         public void Bind(GameViewModel viewModel)
         {
@@ -31,27 +33,9 @@ namespace TreasureHunt.View
 
         public async UniTask InitializeAsync()
         {
-            //TRADEOFF: directly instantiating targets here for simplicity. A better solution would be to use Factory and Pooling
-            // to track all the instantiation tasks
-            var spawnTasks = new List<UniTask<ChestView>>();
-
-            foreach (var chestModel in this.viewModel.TargetsViewModels)
-            {
-                // InstantiateAsync returns an AsyncInstantiateOperation
-                // We can convert this to a UniTask
-                var task = InstantiateAsync(this.targetPrefab, this.targetContainer)
-                    .ToUniTask()
-                    .ContinueWith(op => {
-                        var view = op[0];
-                        view.Bind(chestModel);
-                        return view;
-                    });
-
-                spawnTasks.Add(task);
-            }
-
-            // await all instantiations
-            await UniTask.WhenAll(spawnTasks);
+            this.chestPool = new (this.targetPrefab, this.targetContainer);
+            // allocate based on the initial config
+            await this.chestPool.CreateNewByBatchAsync(this.viewModel.TargetsViewModels.Count);
 
             // bind HUD
             this.viewModel.AttemptsUpdated += HandleAttemptsUpdate;
@@ -61,12 +45,44 @@ namespace TreasureHunt.View
             this.startGameFooter.SetActive(true);
         }
 
+        async UniTask BuildChests()
+        {
+            if (this.activeChests.Count != this.viewModel.TargetsViewModels.Count)
+            {
+                // return current active views to pool
+                foreach (var view in this.activeChests)
+                {
+                    this.chestPool.Return(view);
+                }
+                this.activeChests.Clear();
+
+                // fetch from pool
+                var viewTasks = new List<UniTask<ChestView>>();
+                foreach (var model in this.viewModel.TargetsViewModels)
+                {
+                    viewTasks.Add(this.chestPool.GetAsync());
+                }
+
+                var results = await UniTask.WhenAll(viewTasks);
+
+                // bind the models
+                int i = 0;
+                foreach (var model in this.viewModel.TargetsViewModels)
+                {
+                    results[i].Bind(model);
+                    this.activeChests.Add(results[i]);
+                    i++;
+                }
+            }
+        }
+
         void StartRound()
         {
             this.startGameFooter.SetActive(false);
             this.attemptsText.gameObject.SetActive(true);
             this.targetContainer.gameObject.SetActive(true);
             this.viewModel.Start();
+            _ = this.BuildChests(); // dynamically updates chests in case of config change
         }
 
         void HandleAttemptsUpdate(int count) => this.attemptsText.text = $"Remaining Attempts: {count} / {this.viewModel.MaxAttemptsPerRound}";
@@ -78,7 +94,6 @@ namespace TreasureHunt.View
 
         void HandleGameFinished(bool victory)
         {
-            Debug.Log("Victory: " + victory);
             this.startGameFooter.SetActive(true);
             this.resultText.gameObject.SetActive(true);
             this.resultText.text = victory ? WinMessage : LossMessage;

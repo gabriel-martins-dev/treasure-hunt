@@ -20,8 +20,7 @@ namespace TreasureHunt.Presentation
         readonly IGameMode gameMode;
         readonly IRoundConfig roundConfig;
         readonly IWalletService walletService;
-        readonly ChestViewModel[] targetViewModels;
-
+        ChestViewModel[] targetViewModels;
         CancellationTokenSource cancellationTokenSource;
 
         public GameViewModel(IRoundConfig roundConfig, IGameMode gameMode, IWalletService walletService)
@@ -49,11 +48,27 @@ namespace TreasureHunt.Presentation
         public void Start()
         {
             this.gameMode.StartGame();
-            for (int i = 0; i < this.targetViewModels.Length; i++)
+            // recreate view models if config is changed
+            if (this.targetViewModels.Length != this.roundConfig.NumberOfChestsPerRound)
             {
-                this.targetViewModels[i].SetState(ChestState.Idle);
-                this.targetViewModels[i].SetResult(this.gameMode.VictoryTargetIndex == this.targetViewModels[i].Index);
+                this.targetViewModels = new ChestViewModel[this.roundConfig.NumberOfChestsPerRound];
+                for (int i = 0; i < this.targetViewModels.Length; i++)
+                {
+                    var chestViewModel = new ChestViewModel(i);
+                    chestViewModel.Clicked += () => { this.OnOpenClicked(chestViewModel.Index).Forget(); };
+                    this.targetViewModels[i] = chestViewModel;
+                    this.targetViewModels[i].SetResult(this.gameMode.VictoryTargetIndex == this.targetViewModels[i].Index);
+                }
             }
+            else // if config didn't change, just reset
+            {
+                for (int i = 0; i < this.targetViewModels.Length; i++)
+                {
+                    this.targetViewModels[i].SetState(ChestState.Idle);
+                    this.targetViewModels[i].SetResult(this.gameMode.VictoryTargetIndex == this.targetViewModels[i].Index);
+                }
+            }
+
             this.GameStarted?.Invoke();
         }
 
