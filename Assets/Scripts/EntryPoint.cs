@@ -9,7 +9,7 @@ namespace TreasureHunt.Root
 
     /// <summary>
     /// This is the game root, the application's entry point
-    /// It is responsible for simplist Injection, instantiations, and ViewModels binding to Views
+    /// It is responsible for simplistic Injection, instantiations, and ViewModels binding to Views
     /// </summary>
     public class EntryPoint : MonoBehaviour
     {
