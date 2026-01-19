@@ -15,6 +15,7 @@ namespace TreasureHunt.Root
     {
         [SerializeField] private GameContextConfig gameContextConfig;
         [SerializeField] private GameScreenView gameScreenView;
+        [SerializeField] private ResourcesHUDView resourcesHUDView;
 
         async void Awake()
         {
@@ -23,12 +24,7 @@ namespace TreasureHunt.Root
             IWalletService walletService = new InMemoryWalletService();
             IRewardService rewardService = new RandomRewardService(gameContextConfig, randomService);
             IGameMode gameMode = new TreasureHuntGameMode(gameContextConfig, walletService, rewardService, randomService);
-            GameViewModel gameViewModel = new (gameMode, gameContextConfig);
-
-            walletService.ResourceUpdated += (evt) =>
-            {
-                Debug.Log($"[Event] Currency Update: {evt.Name} changed by {evt.Amount}. Total: {evt.NewTotal}");
-            };
+            GameViewModel gameViewModel = new (gameContextConfig, gameMode, walletService);
 
             gameMode.GameCompleted += (victory) =>
             {
@@ -37,6 +33,7 @@ namespace TreasureHunt.Root
             };
 
             gameScreenView.Bind(gameViewModel);
+            resourcesHUDView.Bind(gameViewModel);
             await gameScreenView.InitializeAsync();
         }
     }

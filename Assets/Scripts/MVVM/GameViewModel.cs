@@ -6,25 +6,29 @@ namespace TreasureHunt.Presentation
     using System.Threading;
     using TreasureHunt.Configs;
     using TreasureHunt.GameMode;
+    using TreasureHunt.Services;
 
     public class GameViewModel : IDisposable
     {
         public event Action<int> AttemptsChanged;
         public event Action<bool> GameFinished;
+        public event Action<ResourceUpdateEvent> ResourceUpdate;
         public IReadOnlyCollection<ChestViewModel> TargetsViewModels => this.targetViewModels;
         public int MaxAttemptsPerRound => this.roundConfig.MaxAttemptsPerRound;
 
         readonly IGameMode gameMode;
         readonly IRoundConfig roundConfig;
+        readonly IWalletService walletService;
         readonly ChestViewModel[] targetViewModels;
 
         CancellationTokenSource cancellationTokenSource;
 
-
-        public GameViewModel(IGameMode gameMode, IRoundConfig roundConfig)
+        public GameViewModel(IRoundConfig roundConfig, IGameMode gameMode, IWalletService walletService)
         {
             this.gameMode = gameMode ?? throw new ArgumentNullException(nameof(gameMode));
             this.roundConfig = roundConfig ?? throw new ArgumentNullException(nameof(roundConfig));
+            this.walletService = walletService ?? throw new ArgumentNullException(nameof(walletService));
+
             this.targetViewModels = new ChestViewModel[this.roundConfig.NumberOfChestsPerRound];
             for (int i = 0; i < this.targetViewModels.Length; i++)
             {
@@ -35,6 +39,10 @@ namespace TreasureHunt.Presentation
 
             this.gameMode.AttemptsUpdated += (val) => this.AttemptsChanged?.Invoke(val);
             this.gameMode.GameCompleted += (win) => this.OnGameFinished(win);
+            this.walletService.ResourceUpdated += (resourceUptEvent) =>
+            {
+                this.ResourceUpdate.Invoke(resourceUptEvent);
+            };
         }
 
         public void Start()
